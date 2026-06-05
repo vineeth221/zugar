@@ -11,4 +11,8 @@ export interface Project {
   description?: string;
   image?: string;
   imageUrls?: string[];
+  schools?: string[];
+  hospitals?: string[];
+  nearbySchools?: string[];
+  nearbyHospitals?: string[];
 }

@@ -10,6 +10,10 @@ const sessionRoutes = require("./src/routes/session.routes");
 const insightRoutes = require("./src/routes/insight.routes");
 const leadRoutes = require("./src/routes/lead.routes");
 
+const preferenceRoutes = require("./src/routes/preference.routes");
+const recommendationRoutes = require("./src/routes/recommendation.routes");
+const comparisonRoutes = require("./src/routes/comparison.routes");
+
 const app = express();
 
 /*
@@ -76,6 +80,12 @@ app.use("/api/insights", insightRoutes);
 
 app.use("/api/leads", leadRoutes);
 
+app.use("/api/preferences", preferenceRoutes);
+
+app.use("/api/recommendations", recommendationRoutes);
+
+app.use("/api/comparisons", comparisonRoutes);
+
 /*
 |--------------------------------------------------------------------------
 | 404 Handler
@@ -113,7 +123,5 @@ app.use((err, req, res, next) => {
 const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => {
-  console.log(
-    `ARKHA Backend running on http://localhost:${PORT}`
-  );
+  console.log(`ARKHA Backend running on http://localhost:${PORT}`);
 });

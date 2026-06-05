@@ -14,28 +14,19 @@ import {
   Bell,
   Lock,
   Target,
-  MapPin,
-  IndianRupee,
-  Users,
-  Phone,
-  GraduationCap,
-  Car,
-  TrendingUp,
   ArrowRight,
-  ChevronRight,
 } from "lucide-react";
 
 import { useChatStore } from "@/store/chat.store";
 import ChatInput from "./ChatInput";
 import ChatMessage from "./ChatMessage";
+import PreferenceForm from "./PreferenceForm";
+import HomeFitScore from "./HomeFitScore";
+import RecommendationCards from "./RecommendationCards";
+import ComparePanel from "./ComparePanel";
 
 const fallbackImage =
   "https://images.unsplash.com/photo-1600607688969-a5bfcd646154?q=80&w=600";
-
-function formatPrice(value?: number) {
-  if (!value) return "N/A";
-  return `₹${(value / 10000000).toFixed(2)} Cr`;
-}
 
 export default function ChatWindow() {
   const {
@@ -43,19 +34,18 @@ export default function ChatWindow() {
     isLoading,
     sendMessage,
     sessions,
-    projects,
     insights,
+    recommendations,
     loadInitialData,
     openSession,
-    talkToBuilder,
     createNewSession,
   } = useChatStore();
+
+  const latestUserMessageRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     loadInitialData();
   }, [loadInitialData]);
-
-  const latestUserMessageRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     if (!messages.length) return;
@@ -73,15 +63,15 @@ export default function ChatWindow() {
   }, [messages]);
 
   useEffect(() => {
-  if (!messages.length || isLoading) return;
+    if (!messages.length || isLoading) return;
 
-  setTimeout(() => {
-    latestUserMessageRef.current?.scrollIntoView({
-      behavior: "smooth",
-      block: "start",
-    });
-  }, 100);
-}, [isLoading, messages]);
+    setTimeout(() => {
+      latestUserMessageRef.current?.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+    }, 100);
+  }, [isLoading, messages]);
 
   const navItems = [
     Home,
@@ -120,6 +110,7 @@ export default function ChatWindow() {
       <aside className="hidden h-screen w-[330px] shrink-0 overflow-hidden border-r border-[#e8eaf2] bg-white xl:block">
         <div className="flex items-center justify-between px-7 py-7">
           <h2 className="text-xl font-bold">My Sessions</h2>
+
           <button
             onClick={createNewSession}
             className="flex items-center gap-2 rounded-xl bg-[#5b43ff] px-4 py-3 text-sm font-semibold text-white shadow-lg shadow-indigo-200"
@@ -138,8 +129,9 @@ export default function ChatWindow() {
             <div
               key={item._id}
               onClick={() => openSession(item._id)}
-              className={`flex cursor-pointer gap-4 rounded-2xl p-4 ${index === 0 ? "bg-[#f4f2ff]" : "hover:bg-[#f7f7fb]"
-                }`}
+              className={`flex cursor-pointer gap-4 rounded-2xl p-4 ${
+                index === 0 ? "bg-[#f4f2ff]" : "hover:bg-[#f7f7fb]"
+              }`}
             >
               <img
                 src={fallbackImage}
@@ -160,7 +152,7 @@ export default function ChatWindow() {
         <div className="mx-7 mt-10 rounded-3xl bg-[#f2efff] p-6">
           <p className="font-bold text-[#5b43ff]">ARKHA PRO ✨</p>
           <p className="mt-5 text-sm leading-6 text-gray-600">
-            Unlock advanced insights, personalized recommendations, and more.
+            Unlock advanced insights, personalised recommendations, and more.
           </p>
           <button className="mt-6 flex w-full items-center justify-between rounded-xl border border-[#6d5cff] px-4 py-3 text-sm font-semibold text-[#5b43ff]">
             Upgrade Now
@@ -204,103 +196,43 @@ export default function ChatWindow() {
         <div className="min-h-0 flex-1 overflow-y-auto px-4 py-5 pb-32 sm:px-6 sm:py-7 lg:px-10 lg:py-8">
           {messages.length === 0 ? (
             <>
-              <section className="relative overflow-hidden rounded-[26px] bg-gradient-to-br from-white via-[#f4f1ff] to-[#eef4ff] p-5 sm:rounded-[32px] sm:p-8 lg:rounded-[36px] lg:p-10">
-                <div className="relative z-10 max-w-full lg:max-w-[560px]">
+              <section className="relative overflow-hidden rounded-[32px] bg-gradient-to-br from-white via-[#f4f1ff] to-[#eef4ff] p-6 sm:p-8 lg:p-10">
+                <div className="max-w-3xl">
                   <p className="text-sm font-semibold text-[#5b43ff] sm:text-lg">
-                    Good morning 👋
+                    Welcome to ARKHA 👋
                   </p>
 
-                  <h2 className="mt-3 text-3xl font-black leading-tight tracking-tight sm:text-4xl lg:mt-4 lg:text-5xl">
-                    Find the right home <br className="hidden sm:block" />{" "}
-                    before you visit.
+                  <h2 className="mt-3 text-3xl font-black leading-tight tracking-tight sm:text-4xl lg:text-5xl">
+                    Find the right home before you visit.
                   </h2>
 
-                  <p className="mt-4 max-w-xl text-sm leading-6 text-gray-600 sm:text-lg sm:leading-8">
-                    Understand every detail. Compare smarter. Decide with
-                    confidence.
-                  </p>
-
-                  <div className="mt-5 flex gap-3 overflow-x-auto pb-2 sm:flex-wrap sm:overflow-visible">
-                    {[
-                      ["Sarjapur Villas", MapPin],
-                      ["2.5Cr Budget", IndianRupee],
-                      ["Family Homes", Users],
-                      ["Compare Projects", Scale],
-                      ["Talk to Builder", Phone],
-                    ].map(([label, Icon]: any) => (
-                      <button
-                        key={label}
-                        onClick={() => sendMessage(label)}
-                        className="flex shrink-0 items-center gap-2 rounded-full border border-gray-200 bg-white px-4 py-3 text-xs font-medium text-gray-600 shadow-sm sm:text-sm"
-                      >
-                        <Icon size={15} />
-                        {label}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                <img
-                  src={fallbackImage}
-                  alt="Luxury villa"
-                  className="pointer-events-none absolute bottom-0 right-0 hidden h-[330px] w-[420px] object-cover opacity-80 lg:block 2xl:h-[420px] 2xl:w-[560px]"
-                />
-
-                <div className="absolute right-10 top-10 hidden rounded-2xl bg-white px-5 py-4 shadow-xl 2xl:block">
-                  <p className="flex items-center gap-2 text-sm font-bold">
-                    <Car size={16} className="text-red-500" />
-                    Great Connectivity
-                  </p>
-                  <p className="text-xs text-gray-500">12 min to Wipro SEZ</p>
-                </div>
-
-                <div className="absolute bottom-20 right-72 hidden rounded-2xl bg-white px-5 py-4 shadow-xl 2xl:block">
-                  <p className="flex items-center gap-2 text-sm font-bold">
-                    <TrendingUp size={16} className="text-green-500" />
-                    High Appreciation
-                  </p>
-                  <p className="text-xs text-gray-500">+28% in last 3 years</p>
-                </div>
-
-                <div className="absolute bottom-14 right-8 hidden rounded-2xl bg-white px-5 py-4 shadow-xl 2xl:block">
-                  <p className="flex items-center gap-2 text-sm font-bold">
-                    <GraduationCap size={16} className="text-[#5b43ff]" />
-                    Top Schools Nearby
-                  </p>
-                  <p className="text-xs text-gray-500">
-                    Greenwood High, Oakridge
+                  <p className="mt-4 max-w-2xl text-sm leading-6 text-gray-600 sm:text-lg sm:leading-8">
+                    Tell ARKHA your budget, purpose, location, and lifestyle
+                    priorities. It remembers your needs and recommends homes
+                    using real project data.
                   </p>
                 </div>
               </section>
 
-              <section className="mt-8 lg:mt-10">
-                <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                  <div>
-                    <h3 className="text-lg font-bold sm:text-xl">
-                      ARKHA Insights
-                    </h3>
-                    <p className="text-sm text-gray-500">
-                      AI-powered insights for smarter decisions
-                    </p>
-                  </div>
+              <div className="mt-8 space-y-8">
+                <PreferenceForm />
 
-                  <button className="flex w-fit items-center gap-2 rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm font-semibold">
-                    View all insights
-                    <ArrowRight size={15} />
-                  </button>
-                </div>
+                <HomeFitScore recommendations={recommendations} />
 
-                <div className="mt-5 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4 xl:gap-5">
-                  {insights.length === 0 &&
-                    [
-                      {
-                        label: "Price Trend",
-                        value: "Add Data",
-                        note: "Insert insights in DB",
-                      },
-                    ].map((item) => (
+                <RecommendationCards recommendations={recommendations} />
+
+                <ComparePanel />
+
+                <section className="rounded-[32px] border border-[#eceaf7] bg-white p-6 shadow-sm">
+                  <h2 className="text-xl font-bold">ARKHA Insights</h2>
+                  <p className="mt-1 text-sm text-gray-500">
+                    Dynamic market signals from your database.
+                  </p>
+
+                  <div className="mt-5 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+                    {insights.map((item) => (
                       <div
-                        key={item.label}
+                        key={item._id}
                         className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm"
                       >
                         <p className="text-sm text-gray-600">{item.label}</p>
@@ -310,95 +242,16 @@ export default function ChatWindow() {
                         </p>
                       </div>
                     ))}
-
-                  {insights.map((item) => (
-                    <div
-                      key={item._id}
-                      className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm"
-                    >
-                      <p className="text-sm text-gray-600">{item.label}</p>
-                      <p className="mt-2 text-xl font-bold">{item.value}</p>
-                      <p className="mt-1 text-xs text-gray-500">{item.note}</p>
-                    </div>
-                  ))}
-                </div>
-              </section>
-
-              <section className="mt-8 lg:mt-10">
-                <h3 className="text-lg font-bold sm:text-xl">
-                  Recommended for You
-                </h3>
-                <p className="text-sm text-gray-500">
-                  Based on your preferences and goals
-                </p>
-
-                <div className="mt-5 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4 xl:gap-5">
-                  {projects.map((project) => {
-                    const image =
-                      project.image || project.imageUrls?.[0] || fallbackImage;
-
-                    return (
-                      <div
-                        key={project._id}
-                        className="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm"
-                      >
-                        <div className="relative h-44 sm:h-36">
-                          <img
-                            src={image}
-                            alt={project.name}
-                            className="h-full w-full object-cover"
-                          />
-                          <span className="absolute left-3 top-3 rounded-full bg-green-500 px-3 py-1 text-xs font-bold text-white">
-                            90% Match
-                          </span>
-                          <Heart
-                            size={18}
-                            className="absolute right-3 top-3 text-white"
-                          />
-                        </div>
-
-                        <div className="p-4">
-                          <div className="flex items-center justify-between">
-                            <h4 className="font-bold">{project.name}</h4>
-                            <ChevronRight
-                              size={16}
-                              className="text-gray-400"
-                            />
-                          </div>
-
-                          <p className="mt-1 text-xs text-gray-500">
-                            {project.location}
-                          </p>
-
-                          <p className="mt-3 text-sm font-bold">
-                            {formatPrice(project.priceMin)} -{" "}
-                            {formatPrice(project.priceMax)}
-                          </p>
-
-                          <p className="mt-2 text-xs text-gray-500">
-                            {project.unitTypes?.join(", ") || "Units"} ·{" "}
-                            {project.propertyType}
-                          </p>
-
-                          <button
-                            onClick={() => talkToBuilder(project)}
-                            className="mt-4 w-full rounded-xl bg-[#5b43ff] px-4 py-3 text-sm font-semibold text-white"
-                          >
-                            Talk to Builder
-                          </button>
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              </section>
+                  </div>
+                </section>
+              </div>
 
               <div className="fixed bottom-6 left-4 right-4 z-50 mx-auto max-w-3xl rounded-[32px] bg-white/30 p-2 backdrop-blur-xl lg:left-[78px] xl:left-[408px]">
                 <ChatInput onSend={sendMessage} disabled={isLoading} />
               </div>
             </>
           ) : (
-            <div className="mx-auto max-w-3xl space-y-6 pb-[220px]">
+            <div className="mx-auto max-w-[1100px] space-y-8 pb-[260px]">
               {messages.map((message, index) => {
                 const isLatestUserMessage =
                   message.role === "user" &&
@@ -419,7 +272,7 @@ export default function ChatWindow() {
                 <p className="text-sm text-gray-500">ARKHA is thinking...</p>
               )}
 
-              <div className="fixed bottom-5 left-4 right-4 z-40 mx-auto max-w-3xl lg:left-[78px] xl:left-[408px]">
+              <div className="fixed bottom-6 left-4 right-4 z-50 mx-auto max-w-3xl rounded-[32px] bg-white/30 p-2 backdrop-blur-xl lg:left-[78px] xl:left-[408px]">
                 <ChatInput onSend={sendMessage} disabled={isLoading} />
               </div>
             </div>
@@ -431,8 +284,9 @@ export default function ChatWindow() {
         {navItems.slice(0, 5).map((Icon, index) => (
           <button
             key={index}
-            className={`flex h-11 w-11 items-center justify-center rounded-2xl ${index === 0 ? "bg-[#f0edff] text-[#5b43ff]" : ""
-              }`}
+            className={`flex h-11 w-11 items-center justify-center rounded-2xl ${
+              index === 0 ? "bg-[#f0edff] text-[#5b43ff]" : ""
+            }`}
           >
             <Icon size={21} />
           </button>

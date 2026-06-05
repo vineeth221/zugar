@@ -1,14 +1,12 @@
-import axios from "axios";
-
-const API_BASE_URL = "http://localhost:5000/api";
+import { http } from "./http";
 
 export const getSessions = async () => {
-  const res = await axios.get(`${API_BASE_URL}/sessions`);
-  return res.data.sessions;
+  const res = await http.get("/sessions");
+  return res.data.sessions || [];
 };
 
 export const createSession = async () => {
-  const res = await axios.post(`${API_BASE_URL}/sessions`, {
+  const res = await http.post("/sessions", {
     title: "New ARKHA Session",
   });
 
@@ -16,9 +14,6 @@ export const createSession = async () => {
 };
 
 export const getSessionMessages = async (sessionId: string) => {
-  const res = await axios.get(
-    `${API_BASE_URL}/sessions/${sessionId}/messages`
-  );
-
-  return res.data.messages;
+  const res = await http.get(`/sessions/${sessionId}/messages`);
+  return res.data.messages || [];
 };

@@ -1,8 +1,6 @@
-import axios from "axios";
-
-const API_BASE_URL = "http://localhost:5000/api";
+import { http } from "./http";
 
 export const getProjects = async () => {
-  const res = await axios.get(`${API_BASE_URL}/projects`);
-  return res.data.projects;
+  const res = await http.get("/projects");
+  return res.data.projects || [];
 };

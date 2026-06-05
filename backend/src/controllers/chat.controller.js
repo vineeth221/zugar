@@ -1,6 +1,9 @@
+const Preference = require("../models/Preference");
+
 const { askAI } = require("../services/openai.service");
 const { findMatchingProjects } = require("../services/recommendation.service");
 const { buildProjectFallback } = require("../services/fallback.service");
+
 const {
   ensureSession,
   saveMessage,
@@ -11,7 +14,7 @@ exports.chat = async (req, res) => {
   try {
     const { message, history = [], sessionId } = req.body;
 
-    if (!message) {
+    if (!message || !message.trim()) {
       return res.status(400).json({
         success: false,
         reply: "Message is required",
@@ -22,7 +25,11 @@ exports.chat = async (req, res) => {
 
     await saveMessage(session._id, "user", message);
 
-    const projects = await findMatchingProjects(message);
+    const preference = await Preference.findOne({
+      sessionId: session._id,
+    }).lean();
+
+    const projects = await findMatchingProjects(message, preference);
 
     let reply;
 
@@ -31,6 +38,7 @@ exports.chat = async (req, res) => {
         userMessage: message,
         history,
         projects,
+        preference,
       });
     } catch (aiError) {
       console.error("AI fallback:", aiError.message);
@@ -38,18 +46,20 @@ exports.chat = async (req, res) => {
     }
 
     await saveMessage(session._id, "assistant", reply);
+
     await updateSession(session._id, reply.slice(0, 80));
 
-    res.status(200).json({
+    return res.status(200).json({
       success: true,
       sessionId: session._id,
       reply,
       projects,
+      preference,
     });
   } catch (error) {
     console.error("Chat error:", error);
 
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       reply: error.message || "ARKHA failed to process this request.",
     });

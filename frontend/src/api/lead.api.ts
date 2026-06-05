@@ -1,8 +1,6 @@
-import axios from "axios";
+import { http } from "./http";
 
-const API_BASE_URL = "http://localhost:5000/api";
-
-export const createLead = async (payload: any) => {
-  const res = await axios.post(`${API_BASE_URL}/leads`, payload);
+export const createLead = async (payload: unknown) => {
+  const res = await http.post("/leads", payload);
   return res.data;
 };

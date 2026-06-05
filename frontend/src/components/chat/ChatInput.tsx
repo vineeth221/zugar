@@ -13,9 +13,11 @@ export default function ChatInput({ onSend, disabled }: Props) {
 
   const submit = (e: FormEvent) => {
     e.preventDefault();
-    if (!message.trim()) return;
 
-    onSend(message.trim());
+    const cleanMessage = message.trim();
+    if (!cleanMessage || disabled) return;
+
+    onSend(cleanMessage);
     setMessage("");
   };
 
@@ -40,14 +42,14 @@ export default function ChatInput({ onSend, disabled }: Props) {
           disabled={disabled}
           onChange={(e) => setMessage(e.target.value)}
           placeholder="Ask ARKHA what home fits your life..."
-          className="min-w-0 flex-1 bg-transparent px-1 py-3 text-sm font-medium text-gray-900 outline-none placeholder:text-gray-400"
+          className="min-w-0 flex-1 bg-transparent px-2 py-4 text-[16px] font-medium text-gray-900 outline-none placeholder:text-gray-400"
         />
 
         <button
           disabled={disabled || !message.trim()}
-          className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[#5b43ff] text-white shadow-lg shadow-indigo-200 transition hover:scale-105 disabled:opacity-40"
+          className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-[#5b43ff] text-white shadow-lg shadow-indigo-200 transition hover:scale-105 disabled:opacity-40"
         >
-          <ArrowUp size={20} />
+          <ArrowUp size={22} />
         </button>
       </div>
     </form>
