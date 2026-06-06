@@ -123,36 +123,46 @@ export const useChatStore = create<ChatStore>((set, get) => ({
   },
 
   submitPreference: async (preference) => {
-    try {
-      set({ isGenerating: true });
+  try {
+    set({
+      isGenerating: true,
+      preference,
+      recommendations: [],
+      comparison: [],
+      error: null,
+    });
 
-      let sessionId = get().activeSessionId;
+    let sessionId = get().activeSessionId;
 
-      if (!sessionId) {
-        const session = await createSession();
-        sessionId = session._id;
-      }
-
-      const saved = await savePreference(sessionId, preference);
-
-      const recommendations = await generateRecommendations(saved.sessionId);
-
-      set({
-        activeSessionId: saved.sessionId,
-        preference: saved.preference,
-        recommendations,
-        isGenerating: false,
-      });
-
-      await get().loadInitialData();
-    } catch (error) {
-      console.error("Preference error:", error);
-      set({
-        isGenerating: false,
-        error: "Failed to generate recommendations",
-      });
+    if (!sessionId) {
+      const session = await createSession();
+      sessionId = session._id;
     }
-  },
+
+    const saved = await savePreference(sessionId, preference);
+
+    const recommendations = await generateRecommendations(saved.sessionId);
+
+    set({
+      activeSessionId: saved.sessionId,
+      preference: saved.preference,
+      recommendations,
+      comparison: [],
+      isGenerating: false,
+    });
+
+    await get().loadInitialData();
+  } catch (error) {
+    console.error("Preference error:", error);
+
+    set({
+      isGenerating: false,
+      recommendations: [],
+      comparison: [],
+      error: "No matching projects found. Try changing location, budget, or property type.",
+    });
+  }
+},
 
   sendMessage: async (message) => {
     const currentMessages = get().messages;

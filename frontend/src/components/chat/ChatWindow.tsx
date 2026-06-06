@@ -196,28 +196,45 @@ export default function ChatWindow() {
         <div className="min-h-0 flex-1 overflow-y-auto px-4 py-5 pb-32 sm:px-6 sm:py-7 lg:px-10 lg:py-8">
           {messages.length === 0 ? (
             <>
-              <section className="relative overflow-hidden rounded-[32px] bg-gradient-to-br from-white via-[#f4f1ff] to-[#eef4ff] p-6 sm:p-8 lg:p-10">
-                <div className="max-w-3xl">
-                  <p className="text-sm font-semibold text-[#5b43ff] sm:text-lg">
-                    Welcome to ARKHA 👋
-                  </p>
+              <section className="relative min-h-[380px] overflow-hidden rounded-[32px] bg-gradient-to-br from-white via-[#f4f1ff] to-[#eef4ff] p-6 sm:p-8 lg:p-10">
+  <div className="relative z-10 max-w-2xl">
+    <p className="text-sm font-semibold text-[#5b43ff] sm:text-lg">
+      Welcome to ARKHA 👋
+    </p>
 
-                  <h2 className="mt-3 text-3xl font-black leading-tight tracking-tight sm:text-4xl lg:text-5xl">
-                    Find the right home before you visit.
-                  </h2>
+    <h2 className="mt-3 text-3xl font-black leading-tight tracking-tight sm:text-4xl lg:text-5xl">
+      Find the right home before you visit.
+    </h2>
 
-                  <p className="mt-4 max-w-2xl text-sm leading-6 text-gray-600 sm:text-lg sm:leading-8">
-                    Tell ARKHA your budget, purpose, location, and lifestyle
-                    priorities. It remembers your needs and recommends homes
-                    using real project data.
-                  </p>
-                </div>
-              </section>
+    <p className="mt-4 max-w-xl text-sm leading-6 text-gray-600 sm:text-lg sm:leading-8">
+      Tell ARKHA your budget, purpose, location, and lifestyle priorities.
+      It remembers your needs and recommends homes using real project data.
+    </p>
+  </div>
+
+  <img
+    src={recommendations?.[0]?.projectId?.image || "/arkha-hero.png"}
+    alt="ARKHA AI home recommendation"
+    className="absolute bottom-0 right-0 hidden h-full w-[55%] object-cover object-right lg:block"
+  />
+
+  <div className="absolute inset-y-0 right-[45%] hidden w-[180px] bg-gradient-to-r from-[#f4f1ff] to-transparent lg:block" />
+
+  {/* <div className="absolute right-10 top-10 hidden rounded-2xl bg-white/90 px-5 py-4 shadow-xl backdrop-blur-xl xl:block">
+    <p className="text-sm font-bold text-gray-900">Future Appreciation</p>
+    <p className="mt-1 text-xs font-semibold text-green-600">High</p>
+  </div>
+
+  <div className="absolute bottom-10 right-16 hidden rounded-2xl bg-white/90 px-5 py-4 shadow-xl backdrop-blur-xl xl:block">
+    <p className="text-sm font-bold text-gray-900">Risk Level</p>
+    <p className="mt-1 text-xs font-semibold text-green-600">Low</p>
+  </div> */}
+</section>
 
               <div className="mt-8 space-y-8">
                 <PreferenceForm />
 
-                <HomeFitScore recommendations={recommendations} />
+                {/* <HomeFitScore recommendations={recommendations} /> */}
 
                 <RecommendationCards recommendations={recommendations} />
 

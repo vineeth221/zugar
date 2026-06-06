@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Home, MapPin, Target, Users } from "lucide-react";
+import { Home, MapPin, Target, Users, Building2 } from "lucide-react";
 import { Preference } from "@/types/chat.types";
 import { useChatStore } from "@/store/chat.store";
 
@@ -12,6 +12,7 @@ const budgets = [
   { label: "Above ₹5 Cr", min: 50000000, max: 100000000 },
 ];
 
+const propertyTypes = ["Apartment", "Villa", "Plot"];
 const locations = ["Sarjapur", "Whitefield", "HSR Layout", "North Bangalore"];
 const priorities = ["Schools", "Commute", "Appreciation", "Lifestyle", "Rental Yield"];
 
@@ -20,15 +21,18 @@ export default function PreferenceForm() {
 
   const [preference, setPreference] = useState<Preference>({
     purpose: "end_use",
-    budgetMin: 20000000,
+    budgetMin: 0,
     budgetMax: 50000000,
-    propertyTypes: ["Villa"],
-    locations: ["Sarjapur"],
-    priorities: ["Schools", "Commute", "Appreciation"],
-    schoolsRequired: true,
+    propertyTypes: [],
+    locations: [],
+    priorities: [],
+    schoolsRequired: false,
   });
 
-  const toggleValue = (key: "locations" | "priorities" | "propertyTypes", value: string) => {
+  const toggleValue = (
+    key: "locations" | "priorities" | "propertyTypes",
+    value: string
+  ) => {
     const current = preference[key] || [];
     const exists = current.includes(value);
 
@@ -48,6 +52,11 @@ export default function PreferenceForm() {
     });
   };
 
+  const canSubmit =
+    preference.budgetMax &&
+    preference.locations.length > 0 &&
+    preference.propertyTypes.length > 0;
+
   return (
     <section className="rounded-[32px] border border-[#eceaf7] bg-white p-6 shadow-sm">
       <div>
@@ -55,143 +64,141 @@ export default function PreferenceForm() {
           Tell us about your home needs
         </h2>
         <p className="mt-1 text-sm text-gray-500">
-          Answer a few questions and ARKHA will do the magic ✨
+          Select your requirement and ARKHA will show matching projects.
         </p>
       </div>
 
-      <div className="mt-6 grid gap-5 lg:grid-cols-4">
-        <div className="rounded-3xl border border-gray-200 p-5">
-          <div className="mb-4 flex h-8 w-8 items-center justify-center rounded-full bg-[#eeeaff] text-sm font-bold text-[#5b43ff]">
-            1
-          </div>
+      <div className="mt-6 grid gap-5 xl:grid-cols-5">
+        <Card step="1" title="Budget">
+          {budgets.map((budget) => {
+            const active =
+              preference.budgetMin === budget.min &&
+              preference.budgetMax === budget.max;
 
-          <h3 className="text-sm font-bold">What’s your budget?</h3>
-          <p className="mt-1 text-xs text-gray-500">All inclusive</p>
+            return (
+              <Option
+                key={budget.label}
+                active={active}
+                label={budget.label}
+                onClick={() => selectBudget(budget)}
+              />
+            );
+          })}
+        </Card>
 
-          <div className="mt-4 space-y-3">
-            {budgets.map((budget) => {
-              const active =
-                preference.budgetMin === budget.min &&
-                preference.budgetMax === budget.max;
+        <Card step="2" title="Purpose">
+          {[
+            ["end_use", "End Use", Home],
+            ["investment", "Investment", Target],
+            ["both", "Both", Users],
+          ].map(([value, label, Icon]: any) => (
+            <Option
+              key={value}
+              active={preference.purpose === value}
+              label={label}
+              Icon={Icon}
+              onClick={() =>
+                setPreference({
+                  ...preference,
+                  purpose: value,
+                })
+              }
+            />
+          ))}
+        </Card>
 
-              return (
-                <button
-                  key={budget.label}
-                  onClick={() => selectBudget(budget)}
-                  className={`w-full rounded-xl border px-4 py-3 text-left text-sm ${
-                    active
-                      ? "border-[#6d5cff] bg-[#f4f1ff] text-[#5b43ff]"
-                      : "border-gray-200 bg-white text-gray-700"
-                  }`}
-                >
-                  {budget.label}
-                </button>
-              );
-            })}
-          </div>
-        </div>
+        <Card step="3" title="Property Type">
+          {propertyTypes.map((type) => (
+            <Option
+              key={type}
+              active={preference.propertyTypes.includes(type)}
+              label={type}
+              Icon={Building2}
+              onClick={() => toggleValue("propertyTypes", type)}
+            />
+          ))}
+        </Card>
 
-        <div className="rounded-3xl border border-gray-200 p-5">
-          <div className="mb-4 flex h-8 w-8 items-center justify-center rounded-full bg-[#eeeaff] text-sm font-bold text-[#5b43ff]">
-            2
-          </div>
+        <Card step="4" title="Location">
+          {locations.map((location) => (
+            <Option
+              key={location}
+              active={preference.locations.includes(location)}
+              label={location}
+              Icon={MapPin}
+              onClick={() => toggleValue("locations", location)}
+            />
+          ))}
+        </Card>
 
-          <h3 className="text-sm font-bold">What are you buying for?</h3>
-
-          <div className="mt-4 space-y-3">
-            {[
-              ["end_use", "End Use", Home],
-              ["investment", "Investment", Target],
-              ["both", "Both", Users],
-            ].map(([value, label, Icon]: any) => (
-              <button
-                key={value}
-                onClick={() =>
-                  setPreference({
-                    ...preference,
-                    purpose: value,
-                  })
-                }
-                className={`flex w-full items-center gap-3 rounded-xl border px-4 py-3 text-left text-sm ${
-                  preference.purpose === value
-                    ? "border-[#6d5cff] bg-[#f4f1ff] text-[#5b43ff]"
-                    : "border-gray-200 bg-white text-gray-700"
-                }`}
-              >
-                <Icon size={16} />
-                {label}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        <div className="rounded-3xl border border-gray-200 p-5">
-          <div className="mb-4 flex h-8 w-8 items-center justify-center rounded-full bg-[#eeeaff] text-sm font-bold text-[#5b43ff]">
-            3
-          </div>
-
-          <h3 className="text-sm font-bold">Preferred locations</h3>
-          <p className="mt-1 text-xs text-gray-500">Select all that apply</p>
-
-          <div className="mt-4 space-y-3">
-            {locations.map((location) => {
-              const active = preference.locations.includes(location);
-
-              return (
-                <button
-                  key={location}
-                  onClick={() => toggleValue("locations", location)}
-                  className={`flex w-full items-center gap-3 rounded-xl border px-4 py-3 text-left text-sm ${
-                    active
-                      ? "border-[#6d5cff] bg-[#f4f1ff] text-[#5b43ff]"
-                      : "border-gray-200 bg-white text-gray-700"
-                  }`}
-                >
-                  <MapPin size={15} />
-                  {location}
-                </button>
-              );
-            })}
-          </div>
-        </div>
-
-        <div className="rounded-3xl border border-gray-200 p-5">
-          <div className="mb-4 flex h-8 w-8 items-center justify-center rounded-full bg-[#eeeaff] text-sm font-bold text-[#5b43ff]">
-            4
-          </div>
-
-          <h3 className="text-sm font-bold">What matters most?</h3>
-          <p className="mt-1 text-xs text-gray-500">Choose your priorities</p>
-
-          <div className="mt-4 space-y-3">
-            {priorities.map((priority) => {
-              const active = preference.priorities.includes(priority);
-
-              return (
-                <button
-                  key={priority}
-                  onClick={() => toggleValue("priorities", priority)}
-                  className={`w-full rounded-xl border px-4 py-3 text-left text-sm ${
-                    active
-                      ? "border-[#6d5cff] bg-[#f4f1ff] text-[#5b43ff]"
-                      : "border-gray-200 bg-white text-gray-700"
-                  }`}
-                >
-                  {priority}
-                </button>
-              );
-            })}
-          </div>
-        </div>
+        <Card step="5" title="Priorities">
+          {priorities.map((priority) => (
+            <Option
+              key={priority}
+              active={preference.priorities.includes(priority)}
+              label={priority}
+              onClick={() => toggleValue("priorities", priority)}
+            />
+          ))}
+        </Card>
       </div>
 
-      <button
-        disabled={isGenerating}
-        onClick={() => submitPreference(preference)}
-        className="mt-6 rounded-2xl bg-[#5b43ff] px-6 py-4 text-sm font-semibold text-white shadow-lg shadow-indigo-200 disabled:opacity-50"
-      >
-        {isGenerating ? "ARKHA is analysing..." : "Generate My Home Fit Score"}
-      </button>
+      <div className="mt-6 flex justify-end">
+        <button
+          disabled={!canSubmit || isGenerating}
+          onClick={() => submitPreference(preference)}
+          className="rounded-2xl bg-[#5b43ff] px-6 py-4 text-sm font-semibold text-white shadow-lg shadow-indigo-200 transition hover:scale-[1.02] disabled:cursor-not-allowed disabled:opacity-40"
+        >
+          {isGenerating ? "Finding Projects..." : "Show Recommended Projects"}
+        </button>
+      </div>
     </section>
+  );
+}
+
+function Card({
+  step,
+  title,
+  children,
+}: {
+  step: string;
+  title: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <div className="rounded-3xl border border-gray-200 p-5">
+      <div className="mb-4 flex h-8 w-8 items-center justify-center rounded-full bg-[#eeeaff] text-sm font-bold text-[#5b43ff]">
+        {step}
+      </div>
+      <h3 className="text-sm font-bold">{title}</h3>
+      <div className="mt-4 space-y-3">{children}</div>
+    </div>
+  );
+}
+
+function Option({
+  active,
+  label,
+  onClick,
+  Icon,
+}: {
+  active: boolean;
+  label: string;
+  onClick: () => void;
+  Icon?: any;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={`flex w-full items-center gap-3 rounded-xl border px-4 py-3 text-left text-sm transition ${
+        active
+          ? "border-[#6d5cff] bg-[#f4f1ff] text-[#5b43ff]"
+          : "border-gray-200 bg-white text-gray-700 hover:bg-gray-50"
+      }`}
+    >
+      {Icon && <Icon size={15} />}
+      {label}
+    </button>
   );
 }
